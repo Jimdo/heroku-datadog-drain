@@ -44,10 +44,13 @@ describe('Heroku Datadog Drain', function () {
       expect(StatsD.prototype.histogram.args).to.deep.equal([
         ['heroku.router.request.connect', 1, ['dyno:web.1', 'method:POST', 'status:201', 'host:myapp.com', 'at:info', 'default:tag', 'app:test-app']],
         ['heroku.router.request.service', 37, ['dyno:web.1', 'method:POST', 'status:201', 'host:myapp.com', 'at:info', 'default:tag', 'app:test-app']],
+        ['heroku.router.request.bytes', 828, ['dyno:web.1', 'method:POST', 'status:201', 'host:myapp.com', 'at:info', 'default:tag', 'app:test-app']],
         ['heroku.router.request.connect', 1, ['dyno:web.2', 'method:GET', 'status:200', 'host:myapp.com', 'at:info', 'default:tag', 'app:test-app']],
         ['heroku.router.request.service', 64, ['dyno:web.2', 'method:GET', 'status:200', 'host:myapp.com', 'at:info', 'default:tag', 'app:test-app']],
+        ['heroku.router.request.bytes', 54414, ['dyno:web.2', 'method:GET', 'status:200', 'host:myapp.com', 'at:info', 'default:tag', 'app:test-app']],
         ['heroku.router.request.connect', 6, ['dyno:web.1', 'method:GET', 'status:503', 'host:myapp.com', 'code:H12', 'desc:Request timeout', 'at:error', 'default:tag', 'app:test-app']],
         ['heroku.router.request.service', 30001, ['dyno:web.1', 'method:GET', 'status:503', 'host:myapp.com', 'code:H12', 'desc:Request timeout', 'at:error', 'default:tag', 'app:test-app']],
+        ['heroku.router.request.bytes', 0, ['dyno:web.1', 'method:GET', 'status:503', 'host:myapp.com', 'code:H12', 'desc:Request timeout', 'at:error', 'default:tag', 'app:test-app']],
       ]);
       expect(StatsD.prototype.increment.args).to.deep.equal([
         ['heroku.router.error', 1, ['dyno:web.1', 'method:GET', 'status:503', 'host:myapp.com', 'code:H12', 'desc:Request timeout', 'at:error', 'default:tag', 'app:test-app']],
