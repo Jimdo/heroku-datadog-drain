@@ -109,6 +109,21 @@ describe('Heroku Datadog Drain', function () {
     });
   });
 
+  it('sends CUSTOM metrics to statsd', function () {
+    return request(app)
+    .post('/')
+    .auth('test-app', 'test-pass')
+    .set('Content-type', 'application/logplex-1')
+    .send('542 <134>1 2015-10-06T12:23:58.066218+00:00 app web.10: logdrain-metrics source=logdrain-metrics sample#s3_request.total=537.543')
+    .expect(200)
+    .expect('OK')
+    .then(function () {
+      expect(StatsD.prototype.histogram.args).to.deep.equal([
+        ['heroku.custom.s3_request.total', 537.543, ['source:logdrain-metrics', 'default:tag', 'app:test-app']],
+      ]);
+    });
+  });
+
   it('sends dyno scaling metrics and events to statsd', function () {
     sinon.spy(StatsD.prototype, 'gauge');
     return request(app)

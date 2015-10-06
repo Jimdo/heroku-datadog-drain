@@ -96,6 +96,23 @@ function processLine (line, prefix, defaultTags) {
     });
   }
 
+
+  // Custom metrics
+  // else if (hasKeys(line, ['app', 'logdrain-metrics'])) {
+  else if (hasKeys(line, ['app', 'logdrain-metrics', 'source'])) {
+    if (process.env.DEBUG) {
+      console.log('Processing custom metrics');
+    }
+    let tags = tagsToArr({ source: line.source });
+    tags = _.union(tags, defaultTags);
+    let metrics = _.pick(line, (_, key) => key.startsWith('sample#'));
+    _.forEach(metrics, function (value, key) {
+      key = key.split('#')[1];
+      statsd.histogram(prefix + 'heroku.custom.' + key, extractNumber(value), tags);
+      // TODO: Use statsd counters or gauges for some postgres metrics (db size, table count, ..)
+    });
+  }
+
   // Scaling event
   else if (line.api === true && line.Scale === true) {
     if (process.env.DEBUG) {
