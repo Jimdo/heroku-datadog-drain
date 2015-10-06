@@ -15,6 +15,7 @@ git clone git@github.com:ozinc/heroku-datadog-drain.git
 cd heroku-datadog-drain
 heroku create
 heroku config:set ALLOWED_APPS=<your-app-slug> <YOUR-APP-SLUG>_PASSWORD=<password>
+heroku config:add BUILDPACK_URL=https://github.com/ddollar/heroku-buildpack-multi.git
 git push heroku master
 heroku ps:scale web=1
 heroku drains:add https://<your-app-slug>:<password>@<this-log-drain-app-slug>.herokuapp.com/ --app <your-app-slug>
