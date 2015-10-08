@@ -74,8 +74,8 @@ function processLine (line, prefix, defaultTags) {
     }
     let tags = tagsToArr(_.pick(line, ['dyno', 'method', 'status', 'host', 'code', 'desc', 'at']));
     tags = _.union(tags, defaultTags);
-    statsd.histogram(prefix + 'heroku.router.request.connect', extractNumber(line.connect), tags);
-    statsd.histogram(prefix + 'heroku.router.request.service', extractNumber(line.service), tags);
+    statsd.timing(prefix + 'heroku.router.request.connect', extractNumber(line.connect), tags);
+    statsd.timing(prefix + 'heroku.router.request.service', extractNumber(line.service), tags);
     statsd.histogram(prefix + 'heroku.router.request.bytes', extractNumber(line.bytes), tags);
     if (line.at === 'error') {
       statsd.increment(prefix + 'heroku.router.error', 1, tags);
@@ -99,7 +99,6 @@ function processLine (line, prefix, defaultTags) {
 
 
   // Custom metrics
-  // else if (hasKeys(line, ['app', 'logdrain-metrics'])) {
   else if (hasKeys(line, ['app', 'logdrain-metrics', 'source'])) {
     if (process.env.DEBUG) {
       console.log('Processing custom metrics');
@@ -109,8 +108,7 @@ function processLine (line, prefix, defaultTags) {
     let metrics = _.pick(line, (_, key) => key.startsWith('sample#'));
     _.forEach(metrics, function (value, key) {
       key = key.split('#')[1];
-      statsd.histogram(prefix + 'heroku.custom.' + key, extractNumber(value), tags);
-      // TODO: Use statsd counters or gauges for some postgres metrics (db size, table count, ..)
+      statsd.timing(prefix + 'heroku.custom.' + key, extractNumber(value), tags);
     });
   }
 
