@@ -77,6 +77,11 @@ function processLine (line, prefix, defaultTags) {
     statsd.timing(prefix + 'heroku.router.request.connect', extractNumber(line.connect), tags);
     statsd.timing(prefix + 'heroku.router.request.service', extractNumber(line.service), tags);
     statsd.histogram(prefix + 'heroku.router.request.bytes', extractNumber(line.bytes), tags);
+
+    var statusPrefix = line.status[0];
+    statsd.increment(prefix + 'heroku.router.' + statusPrefix + 'xx', 1, tags);
+    statsd.increment(prefix + 'heroku.router.' + line.status, 1, tags);
+
     if (line.at === 'error') {
       statsd.increment(prefix + 'heroku.router.error', 1, tags);
     }
